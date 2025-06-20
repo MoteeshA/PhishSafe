@@ -1,16 +1,60 @@
-# phishsafe_app
 
-A new Flutter project.
+---
 
-## Getting Started
+## 🛠️ Flutter Installation Guide (macOS ARM64)
 
-This project is a starting point for a Flutter application.
+### ✅ Prerequisites
 
-A few resources to get you started if this is your first Flutter project:
+* macOS 11 or later (Apple Silicon or Intel)
+* Terminal access
+* Git (pre-installed)
+* Xcode (for iOS)
+* Android Studio (for Android)
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+---
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### 📦 Step 1: Download Flutter SDK
+
+Download the Flutter SDK from the [official Flutter website](https://flutter.dev/docs/get-started/install/macos).
+
+---
+
+
+
+### 🧪 Step 2: Verify Installation
+
+Run:
+
+```bash
+flutter doctor
+```
+
+You should see Flutter detected and any missing components listed.
+
+---
+
+### ⚙️ Step : Install Dependencies
+
+#### 🔧 Android Studio (for Android development)
+
+* Download from: [https://developer.android.com/studio](https://developer.android.com/studio)
+* On first launch, install:
+
+  * Android SDK
+  * Android Emulator
+  * SDK Platform Tools
+
+
+### ✅ Final Check
+
+After installing everything, run:
+
+```bash
+flutter doctor
+```
+
+All checks should show ✅ green.
+
+---
+
+BACKGROUND CHECK IS DONE PARTIALLY
