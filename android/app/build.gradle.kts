@@ -6,9 +6,13 @@ plugins {
 }
 
 android {
+    // ✅ Namespace is required with newer AGP
     namespace = "com.phishsafe_app.phishsafe_app"
+
+    // ✅ Use highest NDK version (plugin needs 27.0.12077973)
+    ndkVersion = "27.0.12077973"
+
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -20,10 +24,8 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
+        // ✅ Application ID (must match your namespace typically)
         applicationId = "com.phishsafe_app.phishsafe_app"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
@@ -32,8 +34,7 @@ android {
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
+            // TODO: Replace with your own signing config
             signingConfig = signingConfigs.getByName("debug")
         }
     }
