@@ -11,11 +11,15 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # UI icons
   cupertino_icons: ^1.0.8
 
-  # ✅ Compatible background service versions
+  # Background service for Android
   flutter_background_service: ^5.0.0
   flutter_background_service_android: ^6.3.0
+
+  # Animations
+  flutter_animate: ^4.2.0
 
 dev_dependencies:
   flutter_test:

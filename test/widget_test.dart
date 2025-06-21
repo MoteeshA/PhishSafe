@@ -1,30 +1,34 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:phishsafe_app/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('PhishSafe UI and toggle test', (WidgetTester tester) async {
+    // Build the app and trigger a frame
+    await tester.pumpWidget(const PhishSafeApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Check if the app title is shown
+    expect(find.text('PhishSafe'), findsWidgets);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    // Check if Protection Active is visible initially
+    expect(find.text('Protection Active'), findsOneWidget);
+    expect(find.text('Stop Protection'), findsOneWidget);
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Tap the stop protection button
+    await tester.tap(find.text('Stop Protection'));
+    await tester.pumpAndSettle();
+
+    // Check if state changed to paused
+    expect(find.text('Protection Paused'), findsOneWidget);
+    expect(find.text('Start Protection'), findsOneWidget);
+
+    // Tap the start protection button
+    await tester.tap(find.text('Start Protection'));
+    await tester.pumpAndSettle();
+
+    // Verify it toggled back
+    expect(find.text('Protection Active'), findsOneWidget);
+    expect(find.text('Stop Protection'), findsOneWidget);
   });
 }
