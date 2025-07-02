@@ -21,6 +21,11 @@ dependencies:
   # Animations
   flutter_animate: ^4.2.0
 
+  # SIM swap detection + behavior tracking
+  shared_preferences: ^2.2.2
+  mobile_number: ^3.0.0
+  # ✅ Replaces sim_info (works properly)
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

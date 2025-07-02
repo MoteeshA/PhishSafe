@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:phishsafe_app/screens/home_screen.dart';
 import 'package:phishsafe_app/services/background_service.dart';
+import 'package:phishsafe_app/services/sim_monitor.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await initializeService(); // Start the background service
+  await initializeService(); // ✅ Start background service
   runApp(const PhishSafeApp());
 }
 
@@ -13,6 +14,10 @@ class PhishSafeApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      SimMonitor.checkForSimSwap(context); // ✅ Run SIM check safely after first frame
+    });
+
     return MaterialApp(
       title: 'PhishSafe',
       debugShowCheckedModeBanner: false,
