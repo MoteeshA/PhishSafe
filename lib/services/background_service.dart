@@ -14,8 +14,9 @@ Future<void> initializeService() async {
       isForegroundMode: true,
       autoStart: true,
       notificationChannelId: 'phishsafe_channel',
-      initialNotificationTitle: 'PhishSafe Monitoring Active',
-      initialNotificationContent: 'Watching for session threats...',
+      initialNotificationTitle: 'PhishSafe Protection Active',
+      initialNotificationContent: 'Monitoring for security threats',
+      foregroundServiceNotificationId: 888,
     ),
     iosConfiguration: IosConfiguration(
       autoStart: true,
@@ -24,43 +25,47 @@ Future<void> initializeService() async {
     ),
   );
 
-  await service.startService();
+  service.startService();
 }
 
-/// Background task logic
+/// Background service entry point
 @pragma('vm:entry-point')
 void onStart(ServiceInstance service) {
   DartPluginRegistrant.ensureInitialized();
 
-  // Timer reference so we can cancel it when service is stopped
+  if (service is AndroidServiceInstance) {
+    service.setForegroundNotificationInfo(
+      title: "PhishSafe Protection",
+      content: "Active threat monitoring",
+    );
+  }
+
   Timer? timer;
 
-  // Listen for stop requests from main app
+  // Handle service control messages
   service.on('stopService').listen((event) {
     timer?.cancel();
     service.stopSelf();
   });
 
-  // Trigger initial events if needed
-  service.invoke('update');
-  service.invoke('checkThreats');
-
-  // ✅ Start periodic background task
-  timer = Timer.periodic(const Duration(seconds: 5), (_) {
-    // Show foreground notification (Android)
+  // Main monitoring loop
+  timer = Timer.periodic(const Duration(seconds: 5), (timer) async {
     if (service is AndroidServiceInstance) {
       service.setForegroundNotificationInfo(
         title: "PhishSafe Running",
-        content: "Monitoring session threats in real-time",
+        content: "Last checked: ${DateTime.now().toLocal()}",
       );
     }
 
-    // Background monitoring logic here
-    debugPrint('✅ PhishSafe background task running: ${DateTime.now()}');
+    // ✅ Only background-appropriate checks here
+    debugPrint('🔒 Security check at ${DateTime.now()}');
+
+    // Add other background-compatible threat checks here
+    // (e.g., network monitoring, but NOT platform channels)
   });
 }
 
-/// iOS background entry point
+/// iOS background handler
 @pragma('vm:entry-point')
 Future<bool> onIosBackground(ServiceInstance service) async {
   DartPluginRegistrant.ensureInitialized();
