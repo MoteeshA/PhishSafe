@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:phishsafe_app/screens/home_screen.dart';
+import 'package:phishsafe_app/screens/feature_page.dart'; // Updated import
 import 'package:phishsafe_app/services/background_service.dart';
 
 Future<void> main() async {
@@ -20,7 +20,7 @@ class PhishSafeApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const HomeScreen(),
+      home: const FeaturePage(), // 👈 Launch FeaturePage instead of HomeScreen
     );
   }
 }
