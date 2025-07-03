@@ -19,6 +19,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late final AnimationController _animationController;
   late final Animation<double> _scaleAnimation;
   late final AnimationController _gradientController;
+  Map<String, dynamic> _securityStatus = {};
 
   final List<String> _securityTips = [
     "Never share OTPs or passwords with anyone, even if they claim to be from support.",
@@ -26,6 +27,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     "Enable two-factor authentication on all important accounts.",
     "Look for HTTPS and the padlock icon in your browser.",
     "Be wary of urgent or threatening messages asking for personal info.",
+    "Regularly update your apps and operating system for security patches.",
+    "Use a password manager to generate and store strong, unique passwords.",
+    "Avoid using public Wi-Fi for sensitive transactions without a VPN.",
   ];
 
   int _currentTipIndex = 0;
@@ -58,6 +62,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
     // Set up threat detection
     _setupThreatDetection();
+
+    // Get initial security status
+    _getSecurityStatus();
   }
 
   Future<void> _rotateSecurityTips() async {
@@ -67,6 +74,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       setState(() {
         _currentTipIndex = (_currentTipIndex + 1) % _securityTips.length;
       });
+    }
+  }
+
+  Future<void> _getSecurityStatus() async {
+    try {
+      final status = await _channel.invokeMethod('getSecurityStatus');
+      if (mounted) {
+        setState(() {
+          _securityStatus = Map<String, dynamic>.from(status ?? {});
+        });
+      }
+    } on PlatformException catch (e) {
+      debugPrint("Error getting security status: $e");
     }
   }
 
@@ -166,6 +186,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           );
         }
       }
+
+      // Refresh security status whenever we check for screen sharing
+      await _getSecurityStatus();
     } on PlatformException catch (e) {
       debugPrint("Error checking screen sharing: $e");
     }
@@ -302,8 +325,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ),
                 actions: [
                   IconButton(
-                    icon: Icon(Icons.settings, color: Colors.white.withOpacity(0.9)),
-                    onPressed: () {},
+                    icon: Icon(Icons.security, color: Colors.white.withOpacity(0.9)),
+                    onPressed: () => _showSecurityStatusDialog(context),
                   ),
                 ],
               ),
@@ -327,6 +350,77 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
         ],
       ),
+    );
+  }
+
+  void _showSecurityStatusDialog(BuildContext context) {
+    final theme = Theme.of(context);
+    final isSecure = _securityStatus['isSecure'] ?? false;
+    final isExternalDisplay = _securityStatus['isExternalDisplayConnected'] ?? false;
+    final isRecordingPossible = _securityStatus['isScreenRecordingPossible'] ?? false;
+    final isRecordingActive = _securityStatus['isScreenRecordingActive'] ?? false;
+    final androidVersion = _securityStatus['androidVersion'] ?? 0;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Security Status'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildSecurityStatusItem(
+              'Secure Window',
+              isSecure ? 'Enabled' : 'Disabled',
+              isSecure ? Icons.check_circle : Icons.warning,
+              isSecure ? Colors.green : Colors.orange,
+            ),
+            const SizedBox(height: 12),
+            _buildSecurityStatusItem(
+              'External Display',
+              isExternalDisplay ? 'Connected' : 'Not connected',
+              isExternalDisplay ? Icons.tv : Icons.tv_off,
+              isExternalDisplay ? Colors.orange : Colors.grey,
+            ),
+            const SizedBox(height: 12),
+            _buildSecurityStatusItem(
+              'Screen Recording',
+              isRecordingActive ? 'Active' : isRecordingPossible ? 'Possible' : 'Not possible',
+              isRecordingActive ? Icons.videocam : Icons.videocam_off,
+              isRecordingActive ? Colors.red : isRecordingPossible ? Colors.orange : Colors.grey,
+            ),
+            const SizedBox(height: 12),
+            _buildSecurityStatusItem(
+              'Android Version',
+              'SDK $androidVersion',
+              Icons.android,
+              Colors.green,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSecurityStatusItem(String title, String value, IconData icon, Color color) {
+    return Row(
+      children: [
+        Icon(icon, color: color),
+        const SizedBox(width: 12),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+            Text(value, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+          ],
+        ),
+      ],
     );
   }
 
@@ -675,16 +769,20 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               const SizedBox(width: 16),
               _buildStatCard(
                 icon: Icons.history,
-                value: '100%',
+                value: _securityStatus['isSecure'] == true ? '100%' : '80%',
                 label: 'Reliability',
-                color: Colors.purple.shade600,
+                color: _securityStatus['isSecure'] == true
+                    ? Colors.purple.shade600
+                    : Colors.orange.shade600,
               ),
               const SizedBox(width: 16),
               _buildStatCard(
                 icon: Icons.phonelink_lock,
-                value: '∞',
+                value: _securityStatus['isScreenRecordingPossible'] == true ? '∞' : 'Basic',
                 label: 'Coverage',
-                color: Colors.orange.shade600,
+                color: _securityStatus['isScreenRecordingPossible'] == true
+                    ? Colors.deepPurple.shade600
+                    : Colors.grey.shade600,
               ),
               const SizedBox(width: 8),
             ],
