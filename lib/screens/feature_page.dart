@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:phishsafe_app/screens/home_screen.dart';
+import 'package:phishsafe_app/screens/behavioral_screen.dart'; // Added import
 
 class FeaturePage extends StatefulWidget {
   const FeaturePage({super.key});
@@ -411,7 +412,7 @@ class _FeaturePageState extends State<FeaturePage> with SingleTickerProviderStat
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const HomeScreen()),
+                    MaterialPageRoute(builder: (context) => const BehavioralScreen()), // Updated to BehavioralScreen
                   );
                 },
               ),

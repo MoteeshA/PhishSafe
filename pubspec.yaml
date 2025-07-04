@@ -21,6 +21,9 @@ dependencies:
   # Animations
   flutter_animate: ^4.2.0
 
+  # File system access
+  path_provider: ^2.1.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
